@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS VPC Peering | Student Project</title>
+<style>
+:root{--navy:#102744;--blue:#2563eb;--cyan:#dbeafe;--green:#166534;--bg:#f4f7fb;--ink:#172033;--muted:#5b6577;--line:#d9e2ef}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(120deg,#102744,#1d4ed8);color:#fff;padding:42px 20px}
+.wrap{max-width:1080px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:.78rem;font-weight:bold;opacity:.85}
+h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.1;margin:12px 0}header p{max-width:720px;color:#e4edff}
+.pill{display:inline-block;background:#fff;color:#1d4ed8;padding:7px 12px;border-radius:99px;font-size:.8rem;font-weight:bold;margin-top:10px}
+nav{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;position:sticky;top:0;z-index:2}nav .wrap{display:flex;gap:18px;flex-wrap:wrap}nav a{color:#1d4ed8;text-decoration:none;font-weight:bold;font-size:.9rem}
+main{padding:26px 20px 50px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 18px #1027440a}.card h2,.card h3{margin-top:0;color:var(--navy)}.section{margin:30px 0}.section>h2{color:var(--navy);font-size:1.55rem}
+.stat{font-size:1.4rem;font-weight:bold;color:var(--blue)}.muted{color:var(--muted)}.notice{border-left:4px solid #d97706;background:#fff7e6;padding:14px 16px;border-radius:8px}
+.diagram{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}.vpc{border:2px solid #8bb6f4;background:#eff6ff;border-radius:14px;padding:16px}.vpc.b{border-color:#86c99b;background:#effcf3}.subnet{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px}.peer{text-align:center;font-weight:bold;color:#b45309}.peer span{display:block;font-size:2rem}
+table{border-collapse:collapse;width:100%;background:#fff;border-radius:12px;overflow:hidden}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:.93rem}th{background:var(--navy);color:#fff}code{background:#edf2f8;padding:2px 5px;border-radius:4px}
+button{border:0;border-radius:9px;background:var(--blue);color:#fff;padding:10px 14px;font-weight:bold;cursor:pointer}button:hover{filter:brightness(.92)}.testbox{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;margin-top:12px}.result{font-weight:bold;margin-top:10px;color:var(--green)}
+footer{background:#102744;color:#dce7f8;padding:24px 20px;text-align:center;font-size:.9rem}
+@media(max-width:650px){.diagram{grid-template-columns:1fr}.peer span{transform:rotate(90deg)}nav{position:static}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="eyebrow">Cloud Computing • Student Project</div>
+<h1>AWS VPC Peering</h1>
+<p>A learning demo showing how two separate Amazon Virtual Private Clouds can communicate privately through a VPC peering connection when routes and security rules are configured correctly.</p>
+<span class="pill">Interactive project showcase • Demo only</span>
+</div></header>
+<nav><div class="wrap"><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#network">IP Plan</a><a href="#routes">Routes</a><a href="#testing">Test Simulator</a><a href="#safety">Limitations</a></div></nav>
+<main class="wrap">
+<section class="section" id="overview"><h2>Project Overview</h2><div class="grid">
+<div class="card"><h3>Objective</h3><p>Connect two non-overlapping VPC networks using VPC Peering and test private communication between application instances.</p></div>
+<div class="card"><h3>VPC A</h3><div class="stat">10.10.0.0/16</div><p class="muted">Public bastion subnet and private App-A subnet.</p></div>
+<div class="card"><h3>VPC B</h3><div class="stat">10.20.0.0/16</div><p class="muted">Private App-B subnet, without a public IP.</p></div>
+</div></section>
+<section class="section" id="architecture"><h2>Network Architecture</h2><div class="card">
+<div class="diagram">
+<div class="vpc"><h3>VPC A</h3><p><code>10.10.0.0/16</code></p><div class="subnet"><b>Public subnet</b><br><code>10.10.1.0/24</code><br>Bastion: <code>10.10.1.10</code><br><small>Public IP enabled in the planned lab</small></div><div class="subnet"><b>Private subnet</b><br><code>10.10.2.0/24</code><br>App-A: <code>10.10.2.10</code><br><small>No public IP</small></div></div>
+<div class="peer"><span>⇄</span>VPC Peering</div>
+<div class="vpc b"><h3>VPC B</h3><p><code>10.20.0.0/16</code></p><div class="subnet"><b>Private subnet</b><br><code>10.20.1.0/24</code><br>App-B: <code>10.20.1.10</code><br><small>No public IP</small></div><p class="muted">No Internet Gateway planned for VPC B.</p></div>
+</div></div></section>
+<section class="section" id="network"><h2>IP Address Plan</h2><div class="card"><table><thead><tr><th>Resource</th><th>CIDR / IP</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>VPC A</td><td>10.10.0.0/16</td><td>Network A</td></tr><tr><td>Public subnet A</td><td>10.10.1.0/24</td><td>Bastion access</td></tr><tr><td>Private subnet A</td><td>10.10.2.0/24</td><td>App-A</td></tr><tr><td>VPC B</td><td>10.20.0.0/16</td><td>Network B</td></tr><tr><td>Private subnet B</td><td>10.20.1.0/24</td><td>App-B</td></tr><tr><td>Peering connection</td><td><code>pcx-…</code></td><td>Actual ID must be recorded after deployment</td></tr>
+</tbody></table></div></section>
+<section class="section" id="routes"><h2>Required Routes and Security</h2><div class="grid">
+<div class="card"><h3>VPC A private route table</h3><p>Destination: <code>10.20.0.0/16</code></p><p>Target: VPC peering connection ID</p></div>
+<div class="card"><h3>VPC A public route table</h3><p><code>0.0.0.0/0</code> → Internet Gateway</p><p><code>10.20.0.0/16</code> → VPC peering connection</p></div>
+<div class="card"><h3>VPC B private route table</h3><p>Destination: <code>10.10.0.0/16</code></p><p>Target: VPC peering connection ID</p></div>
+<div class="card"><h3>Security groups</h3><p>Allow SSH only from the trusted bastion/current public IP. Allow ICMP Echo Request from the other private host as required for ping testing.</p><p><b>Never open SSH to everyone (0.0.0.0/0).</b></p></div>
+</div></section>
+<section class="section" id="testing"><h2>Connectivity Test Simulator</h2><p class="muted">This is a browser-side illustration of expected logic; it does not send real network packets or check AWS resources.</p>
+<div class="testbox"><b>Test 1: Before peering routes are configured</b><p>App-A → App-B ping</p><button onclick="showResult('before')">Show simulated result</button><div id="before" class="result" aria-live="polite"></div></div>
+<div class="testbox"><b>Test 2: After peering, routes, and ICMP rules are configured</b><p>App-A → App-B ping</p><button onclick="showResult('after')">Show simulated result</button><div id="after" class="result" aria-live="polite"></div></div>
+<div class="testbox"><b>Test 3: ICMP rule temporarily removed</b><p>App-A → App-B ping</p><button onclick="showResult('blocked')">Show simulated result</button><div id="blocked" class="result" aria-live="polite"></div></div>
+</section>
+<section class="section" id="safety"><h2>Important Project Status</h2><div class="notice"><b>This website is a project showcase/demo, not a deployed AWS network.</b> It does not create VPCs, launch EC2 instances, establish peering, or run real ping/SSH tests. To claim the AWS lab is completed, create the resources in your own authorized AWS account and add genuine screenshots, actual resource IDs, and test outputs to your report.</div>
+<p class="muted">Cost note: AWS resources can incur charges. Review current pricing and credits, use parent/guardian assistance for account/payment verification if under 18, and clean up lab resources after collecting evidence.</p></section>
+</main>
+<footer><div class="wrap">AWS VPC Peering — Student Learning Demo<br>Prepared as a static website template for GitHub Pages.</div></footer>
+<script>
+function showResult(id){
+ const messages={
+ before:"Simulated expectation: no replies until the peering connection and required routes are configured.",
+ after:"Simulated expectation: ping replies if peering is Active, both routes exist, and ICMP/security rules allow the traffic.",
+ blocked:"Simulated expectation: ping fails while the destination ICMP Echo Request rule is removed."
+ };
+ document.getElementById(id).textContent=messages[id];
+}
+</script>
+</body></html>
